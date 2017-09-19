@@ -55,6 +55,11 @@ namespace ZXing.OneD
 
       private bool forceCodesetB;
 
+      /// <summary>
+      /// Whether to add the GS1 identifying function character
+      /// </summary>
+      private bool gs1;
+
       public override BitMatrix encode(String contents,
                               BarcodeFormat format,
                               int width,
@@ -65,6 +70,9 @@ namespace ZXing.OneD
          {
             throw new ArgumentException("Can only encode CODE_128, but got " + format);
          }
+
+         if (hints.ContainsKey(EncodeHintType.GS1))
+            gs1 = true;
 
          forceCodesetB = (hints != null &&
                           hints.ContainsKey(EncodeHintType.CODE128_FORCE_CODESET_B) &&
@@ -107,6 +115,7 @@ namespace ZXing.OneD
          int checkWeight = 1;
          int codeSet = 0; // selected code (CODE_CODE_B or CODE_CODE_C)
          int position = 0; // position in contents
+         bool gs1CharacterWritten = false;//Indicates whether the gs1 FNC1 character has been added to the barcode
 
          while (position < length)
          {
@@ -127,36 +136,44 @@ namespace ZXing.OneD
             int patternIndex;
             if (newCodeSet == codeSet)
             {
-               // Encode the current character
-               // First handle escapes
-               switch (contents[position])
+               if (gs1 && !gs1CharacterWritten)
                {
-                  case ESCAPE_FNC_1:
-                     patternIndex = CODE_FNC_1;
-                     break;
-                  case ESCAPE_FNC_2:
-                     patternIndex = CODE_FNC_2;
-                     break;
-                  case ESCAPE_FNC_3:
-                     patternIndex = CODE_FNC_3;
-                     break;
-                  case ESCAPE_FNC_4:
-                     patternIndex = CODE_FNC_4_B; // FIXME if this ever outputs Code A
-                     break;
-                  default:
-                     // Then handle normal characters otherwise
-                     if (codeSet == CODE_CODE_B)
-                     {
-                        patternIndex = contents[position] - ' ';
-                     }
-                     else
-                     { // CODE_CODE_C
-                        patternIndex = Int32.Parse(contents.Substring(position, 2));
-                        position++; // Also incremented below
-                     }
-                     break;
+                  patternIndex = 102;//Add FNC1
+                  gs1CharacterWritten = true;
                }
-               position++;
+               else
+               {
+                  // Encode the current character
+                  // First handle escapes
+                  switch (contents[position])
+                  {
+                     case ESCAPE_FNC_1:
+                        patternIndex = CODE_FNC_1;
+                        break;
+                     case ESCAPE_FNC_2:
+                        patternIndex = CODE_FNC_2;
+                        break;
+                     case ESCAPE_FNC_3:
+                        patternIndex = CODE_FNC_3;
+                        break;
+                     case ESCAPE_FNC_4:
+                        patternIndex = CODE_FNC_4_B; // FIXME if this ever outputs Code A
+                        break;
+                     default:
+                        // Then handle normal characters otherwise
+                        if (codeSet == CODE_CODE_B)
+                        {
+                           patternIndex = contents[position] - ' ';
+                        }
+                        else
+                        { // CODE_CODE_C
+                           patternIndex = Int32.Parse(contents.Substring(position, 2));
+                           position++; // Also incremented below
+                        }
+                        break;
+                  }
+                  position++;
+               }
             }
             else
             {
@@ -188,7 +205,7 @@ namespace ZXing.OneD
 
             // Compute checksum
             checkSum += patternIndex * checkWeight;
-            if (position != 0)
+            if (patterns.Count > 1)
             {
                checkWeight++;
             }

@@ -44,5 +44,24 @@ namespace ZXing.OneD
             Hints[EncodeHintType.CODE128_FORCE_CODESET_B] = value;
          }
       }
+
+      /// <summary>
+      /// Create a DataMatrix that conforms tot he GS1 standard
+      /// </summary>
+      public bool UseGS1
+      {
+         get
+         {
+            if (Hints.ContainsKey(EncodeHintType.GS1))
+            {
+               return (bool)Hints[EncodeHintType.GS1];
+            }
+            return false;
+         }
+         set
+         {
+            Hints[EncodeHintType.GS1] = value;
+         }
+      }
    }
 }
