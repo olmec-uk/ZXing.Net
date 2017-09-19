@@ -74,6 +74,7 @@ namespace ZXing.Datamatrix
          var defaultEncodation = Encodation.ASCII;
          Dimension minSize = null;
          Dimension maxSize = null;
+         bool gs1 = false;
          if (hints != null)
          {
             if (hints.ContainsKey(EncodeHintType.DATA_MATRIX_SHAPE))
@@ -109,11 +110,15 @@ namespace ZXing.Datamatrix
                   defaultEncodation = Convert.ToInt32(requestedDefaultEncodation.ToString());
                }
             }
+            if (hints.ContainsKey(EncodeHintType.GS1))
+            {
+               gs1 = true;
+            }
          }
 
 
          //1. step: Data encodation
-         String encoded = HighLevelEncoder.encodeHighLevel(contents, shape, minSize, maxSize, defaultEncodation);
+         String encoded = HighLevelEncoder.encodeHighLevel(contents, shape, minSize, maxSize, defaultEncodation, gs1);
 
          SymbolInfo symbolInfo = SymbolInfo.lookup(encoded.Length, shape, minSize, maxSize, true);
 

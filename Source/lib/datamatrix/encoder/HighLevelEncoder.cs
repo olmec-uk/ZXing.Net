@@ -128,7 +128,7 @@ namespace ZXing.Datamatrix.Encoder
       /// <returns>the encoded message (the char values range from 0 to 255)</returns>
       public static String encodeHighLevel(String msg)
       {
-         return encodeHighLevel(msg, SymbolShapeHint.FORCE_NONE, null, null, Encodation.ASCII);
+         return encodeHighLevel(msg, SymbolShapeHint.FORCE_NONE, null, null, Encodation.ASCII, false);
       }
 
       /// <summary>
@@ -140,12 +140,14 @@ namespace ZXing.Datamatrix.Encoder
       /// <param name="minSize">the minimum symbol size constraint or null for no constraint</param>
       /// <param name="maxSize">the maximum symbol size constraint or null for no constraint</param>
       /// <param name="defaultEncodation">encoding mode to start with</param>
+      /// <param name="gs1">wether to insert GS1 identifiers</param>
       /// <returns>the encoded message (the char values range from 0 to 255)</returns>
       public static String encodeHighLevel(String msg,
                                            SymbolShapeHint shape,
                                            Dimension minSize,
                                            Dimension maxSize,
-                                           int defaultEncodation)
+                                           int defaultEncodation,
+                                           bool gs1)
       {
          //the codewords 0..255 are encoded as Unicode characters
          Encoder[] encoders =
@@ -193,6 +195,10 @@ namespace ZXing.Datamatrix.Encoder
                break;
             default:
                throw new InvalidOperationException("Illegal mode: " + encodingMode);
+         }
+         if (gs1)
+         {
+            context.writeCodeword(FNC1);
          }
          while (context.HasMoreCharacters)
          {
