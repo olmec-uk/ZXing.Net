@@ -75,14 +75,7 @@ namespace ZXing.Datamatrix.Encoder
             }
             else
             {
-               if (c == 29)
-               {
-                  context.writeCodeword((char)HighLevelEncoder.FNC1);
-               }
-               else
-               {
-                  context.writeCodeword((char)(c + 1));
-               }
+               context.writeCodeword((char)(c + 1));
                context.Pos++;
             }
 
