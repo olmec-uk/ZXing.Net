@@ -392,17 +392,18 @@ namespace ZXing.OneD
          return null;
       }
 
-      /// <summary>
-      /// Attempts to decode a single UPC/EAN-encoded digit.
-      /// </summary>
-      /// <param name="row">row of black/white values to decode</param>
-      /// <param name="counters">the counts of runs of observed black/white/black/... values</param>
-      /// <param name="rowOffset">horizontal offset to start decoding from</param>
-      /// <param name="patterns">the set of patterns to use to decode -- sometimes different encodings</param>
-      /// for the digits 0-9 are used, and this indicates the encodings for 0 to 9 that should
-      /// be used
-      /// <returns>horizontal offset of first pixel beyond the decoded digit</returns>
-      internal static bool decodeDigit(BitArray row, int[] counters, int rowOffset, int[][] patterns, out int digit)
+	   /// <summary>
+	   /// Attempts to decode a single UPC/EAN-encoded digit.
+	   /// </summary>
+	   /// <param name="row">row of black/white values to decode</param>
+	   /// <param name="counters">the counts of runs of observed black/white/black/... values</param>
+	   /// <param name="rowOffset">horizontal offset to start decoding from</param>
+	   /// <param name="patterns">the set of patterns to use to decode -- sometimes different encodings</param>
+	   /// <param name="digit"></param>
+	   /// for the digits 0-9 are used, and this indicates the encodings for 0 to 9 that should
+	   /// be used
+	   /// <returns>horizontal offset of first pixel beyond the decoded digit</returns>
+	   internal static bool decodeDigit(BitArray row, int[] counters, int rowOffset, int[][] patterns, out int digit)
       {
          digit = -1;
 
